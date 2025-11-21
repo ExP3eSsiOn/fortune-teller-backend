@@ -8,6 +8,10 @@ const OpenAI = require('openai');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Verify OpenAI API Key is loaded
+console.log('[Startup] Checking OPENAI_API_KEY:', process.env.OPENAI_API_KEY ? '✓ Loaded' : '✗ Missing');
+console.log('[Startup] API Key length:', process.env.OPENAI_API_KEY?.length || 0);
+
 // Initialize OpenAI
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
