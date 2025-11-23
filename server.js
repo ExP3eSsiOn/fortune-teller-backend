@@ -24,10 +24,26 @@ const openai = new OpenAI({
 //   crossOriginEmbedderPolicy: false
 // }));
 
-// CORS - Allow all origins for development
+// CORS - Restricted origins
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5500',
+  'http://127.0.0.1:5500',
+  'https://www.mechoke.com',
+  'https://mechoke.com',
+  'https://promosalepage.com'
+];
+
 app.use(cors({
-  origin: '*',
-  credentials: false,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      return callback(new Error('The CORS policy for this site does not allow access from the specified Origin.'), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true,
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   preflightContinue: false,
@@ -64,12 +80,7 @@ app.get('/health', (req, res) => {
 });
 
 // Handle preflight requests
-app.options('/api/fortune', (req, res) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  res.sendStatus(200);
-});
+// Preflight requests are handled by the cors middleware
 
 // Fortune telling endpoint
 app.post('/api/fortune', async (req, res) => {
